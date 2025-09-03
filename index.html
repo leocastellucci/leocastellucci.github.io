@@ -1,5 +1,224 @@
-pbpaste > index.html
-touch .nojekyll
-git add index.html .nojekyll
-git commit -m "Add index.html for GitHub Pages"
-git push origin main
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-KRHJJV2FLH"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-KRHJJV2FLH');
+</script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SETTEBELLO Marketing</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #000000;
+      --text: #ffffff;
+      --muted: #a4a4a4;
+      --lime: #c7ff16;
+      --lime-2: #c2ff0a;
+      --chip-bg: #0f0f0f;
+      --card-bg: #0b0b0b;
+      --shadow: 0 0 0 1px rgba(255,255,255,0.06) inset;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; background: var(--bg); color: var(--text); font-family: 'DM Sans', system-ui, -apple-system, Segoe UI, Roboto, sans-serif; margin: 0; scroll-behavior: smooth; }
+
+    .page { width: 100%; position: relative; }
+
+    /* Logo + nav module */
+    .header-bar {
+      width: 100%;
+      max-width: 1400px;
+      margin: 160px auto 180px;
+      padding: 0 80px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+      transform: scale(1.2);
+    }
+
+    .pixel-diamond {
+      width: 80px; height: 80px; background: var(--lime-2);
+      transform: rotate(45deg);
+      box-shadow: var(--shadow);
+    }
+
+    .brand-text { font-weight: 800; font-size: 52px; letter-spacing: 2px; color: var(--lime-2); text-align: center; }
+    .badge-marketing {
+      display: inline-block;
+      color: #000;
+      background: var(--lime-2);
+      padding: 8px 18px;
+      border-radius: 24px;
+      font-weight: 800; font-size: 14px; letter-spacing: 1px;
+      margin-top: -6px;
+    }
+
+    .cta-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      transform: scale(1.1);
+    }
+
+    .btn-pill {
+      appearance: none;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 999px;
+      padding: 26px 36px;
+      min-width: 340px;
+      text-align: center;
+      font-weight: 700;
+      letter-spacing: .02em;
+      cursor: pointer;
+      transition: transform .06s ease, background-color .2s ease, border-color .2s ease;
+      background: transparent;
+      color: var(--text);
+      font-size: 18px;
+    }
+    .btn-pill:hover { transform: translateY(-1px); border-color: rgba(255,255,255,0.28); }
+
+    .btn-linkedin { background: var(--lime-2); color: #000; border-color: transparent; }
+    .btn-linkedin:hover { filter: brightness(1.03); }
+
+    /* Sections container */
+    main {
+      width: 100%;
+      position: relative;
+      padding-left: 80px;
+      padding-right: 80px;
+    }
+
+    section { min-height: 100vh; padding-top: 220px; }
+
+    /* ABOUT section */
+    .chip {
+      display: inline-flex; align-items: center; gap: 12px;
+      background: var(--chip-bg);
+      color: #d4d4d4; border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 999px; padding: 10px 18px; font-weight: 600; font-size: 12px;
+    }
+    .chip .tiny-diamond { width: 16px; height: 16px; background: var(--lime-2); transform: rotate(45deg); }
+
+    h1.hero { font-size: 64px; line-height: 1.1; margin: 18px 0 18px; max-width: 860px; }
+    .lead { max-width: 860px; color: var(--muted); font-size: 16px; line-height: 1.6; }
+
+    /* PORTFOLIO section */
+    .section-title { font-size: 20px; margin-bottom: 70px; font-weight: 700; letter-spacing: .04em; text-align: left; }
+
+    .portfolio-row { display: flex; justify-content: center; gap: 36px; width: 100%; max-width: 1044px; margin: 80px auto; }
+
+    .circle {
+      width: 180px; height: 180px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.22);
+      display: grid; place-items: center; position: relative;
+    }
+    .circle .diamond { width: 96px; height: 96px; background: var(--lime-2); transform: rotate(45deg); }
+
+    /* SERVICES section */
+    .services-grid { display: flex; justify-content: center; gap: 56px; width: 100%; max-width: 1448px; margin: 80px auto; }
+
+    .card {
+      width: 320px; height: 200px; background: #0c0c0c; border: 1px solid rgba(255,255,255,0.08); border-radius: 22px; padding: 20px; position: relative; box-shadow: var(--shadow);
+    }
+    .card .tag { position: absolute; top: 14px; left: 14px; width: 34px; height: 34px; border-radius: 10px; background: var(--lime-2); color: #000; display: grid; place-items: center; font-weight: 900; }
+    .card h3 { margin: 50px 0 10px; font-size: 16px; }
+    .card p { color: var(--muted); font-size: 12px; line-height: 1.5; max-width: 260px; }
+
+    .spacer-portfolio { height: 60px; }
+    .spacer-services { height: 60px; }
+
+    @media (max-width: 1448px) {
+      .services-grid { width: 100%; justify-content: center; flex-wrap: wrap; }
+    }
+    @media (max-width: 1120px) {
+      .portfolio-row { width: 100%; justify-content: center; flex-wrap: wrap; }
+    }
+    @media (max-width: 1100px) {
+      .services-grid { flex-direction: column; align-items: center; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <!-- Logo + nav module -->
+    <div class="header-bar">
+      <div class="logo-wrap">
+        <div class="pixel-diamond" aria-hidden="true"></div>
+        <div class="brand-text">SETTEBELLO</div>
+        <div class="badge-marketing">MARKETING</div>
+      </div>
+
+      <nav class="cta-stack" aria-label="Primary">
+        <a class="btn-pill btn-linkedin" href="https://www.linkedin.com/in/leo-castellucci-b00b9a1b7/" target="_blank" rel="noopener">CONNECT ON LINKEDIN</a>
+        <a class="btn-pill" href="#about">ABOUT</a>
+        <a class="btn-pill" href="#portfolio">PORTFOLIO</a>
+        <a class="btn-pill" href="#services">SERVICES</a>
+      </nav>
+    </div>
+
+    <!-- Content sections -->
+    <main>
+      <!-- ABOUT -->
+      <section id="about" aria-label="About" style="padding-top:300px;">
+        <div class="chip"><span class="tiny-diamond"></span> Growth Marketing &amp; Design</div>
+        <h1 class="hero">We help ambitious brands grow faster through data, creativity, and strategy.</h1>
+        <p class="lead">SETTEBELLO combine sharp strategy, creative design, and data-driven execution to help brands grow faster and smarter. By blending performance marketing with strong brand thinking, we create campaigns that not only capture attention but also convert. It’s growth you can see, track, and measure.</p>
+        <div class="spacer-portfolio"></div>
+      </section>
+
+      <!-- PORTFOLIO -->
+      <section id="portfolio" aria-label="Portfolio">
+        <div class="section-title">PORTFOLIO</div>
+        <div class="portfolio-row">
+          <div class="circle"><div class="diamond"></div></div>
+          <div class="circle"><div class="diamond"></div></div>
+          <div class="circle"><div class="diamond"></div></div>
+          <div class="circle"><div class="diamond"></div></div>
+          <div class="circle"><div class="diamond"></div></div>
+        </div>
+        <div class="spacer-services"></div>
+      </section>
+
+      <!-- SERVICES -->
+      <section id="services" aria-label="Services">
+        <div class="section-title">SERVICES</div>
+        <div class="services-grid">
+          <article class="card">
+            <div class="tag">GS</div>
+            <h3>Growth Strategy</h3>
+            <p>Audit, value proposition, roadmap, KPI setup.</p>
+          </article>
+          <article class="card">
+            <div class="tag">PA</div>
+            <h3>Paid Acquisition</h3>
+            <p>Search, social, and programmatic ads.</p>
+          </article>
+          <article class="card">
+            <div class="tag">GD</div>
+            <h3>Graphic Design</h3>
+            <p>Visual layout, illustrations, print, and digital design.</p>
+          </article>
+          <article class="card">
+            <div class="tag">SB</div>
+            <h3>Strategic Branding</h3>
+            <p>Logo design, brand strategy, messaging, brand guidelines.</p>
+          </article>
+        </div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>
