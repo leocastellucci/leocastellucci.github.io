@@ -120,47 +120,138 @@
           </article>
         </div>
       </section>
+
+      <!-- INSTANT SEO AUDIT -->
+      <section id="seo-audit" aria-label="Instant SEO Audit">
+        <div class="section-title">INSTANT SEO AUDIT</div>
+        <h2 class="hero">Instant SEO Audit</h2>
+        <p class="lead">Paste a website URL and get instant structural SEO insights. All analysis runs locally in your browser—your data stays yours.</p>
+        
+        <div class="audit-container">
+          <form id="auditForm" class="audit-form">
+            <input type="url" id="auditUrl" placeholder="https://example.com" required class="audit-input" aria-label="Website URL">
+            <button type="button" class="btn-pill btn-linkedin" id="auditSubmit">ANALYZE WEBSITE</button>
+          </form>
+
+          <div id="auditStatus" class="audit-status hidden"></div>
+
+          <div id="auditResults" class="audit-results hidden">
+            <div class="results-grid">
+              <div class="card result-card score-card">
+                <div class="tag">SC</div>
+                <h3>SEO Structure Score</h3>
+                <div class="score-display">
+                  <span id="scoreValue">0</span><span class="score-total">/100</span>
+                </div>
+                <div class="progress-bar"><div id="scoreFill" class="progress-fill"></div></div>
+              </div>
+
+              <div class="card result-card">
+                <div class="tag">H</div>
+                <h3>Heading Structure</h3>
+                <ul id="headingList" class="result-list"></ul>
+              </div>
+
+              <div class="card result-card">
+                <div class="tag">M</div>
+                <h3>Metadata Check</h3>
+                <ul id="metaList" class="result-list"></ul>
+              </div>
+
+              <div class="card result-card">
+                <div class="tag">I</div>
+                <h3>Image SEO</h3>
+                <p id="imageInfo" class="result-text"></p>
+              </div>
+
+              <div class="card result-card">
+                <div class="tag">L</div>
+                <h3>Links Overview</h3>
+                <p id="linksInfo" class="result-text"></p>
+              </div>
+
+              <div class="card result-card">
+                <div class="tag">K</div>
+                <h3>Keyword Basics</h3>
+                <div id="keywordCloud" class="keyword-cloud"></div>
+                <p id="keywordWarning" class="warning-text"></p>
+              </div>
+            </div>
+
+            <div class="quick-wins">
+              <h3>Quick Wins</h3>
+              <div id="quickWinsList" class="wins-grid"></div>
+            </div>
+          </div>
+        </div>
+      </section>
     </main>
   </div>
 
-  <!-- ===== Meny-logik ===== -->
-  <script>
-    const toggle = document.getElementById('menuToggle');
-    const menu = document.getElementById('siteMenu');
-
-    function closeMenu() {
-      toggle.setAttribute('aria-expanded', 'false');
-      menu.classList.remove('open');
-      /* Återställ scroll när menyn stängs */
-      document.body.style.overflow = '';
-      document.removeEventListener('click', outsideClick);
-      document.removeEventListener('keydown', escClose);
+  <style>
+    /* Integrated Audit Styles */
+    .audit-container { margin-top: 40px; max-width: 860px; }
+    .audit-form { display: flex; gap: 16px; margin-bottom: 40px; flex-wrap: wrap; }
+    .audit-input {
+      flex: 1;
+      min-width: 280px;
+      background: var(--card-bg);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 999px;
+      padding: 20px 30px;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 16px;
+      outline: none;
+      transition: border-color .2s ease;
     }
-    function outsideClick(e) {
-      if (!menu.contains(e.target) && e.target !== toggle) closeMenu();
+    .audit-input:focus { border-color: var(--lime-2); }
+    #auditSubmit { min-width: 200px; padding: 20px 36px; height: 60px; display: flex; align-items: center; justify-content: center; }
+    
+    .audit-status { margin-bottom: 24px; color: var(--muted); font-size: 14px; }
+    .audit-results { 
+      opacity: 0; 
+      transform: translateY(20px); 
+      transition: opacity 0.6s ease, transform 0.6s ease;
     }
-    function escClose(e) {
-      if (e.key === 'Escape') closeMenu();
+    .audit-results.visible { opacity: 1; transform: translateY(0); }
+    .hidden { display: none; }
+
+    .results-grid { 
+      display: grid; 
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); 
+      gap: 24px; 
+      margin-top: 40px;
     }
+    .result-card { width: 100%; height: auto; min-height: 200px; }
+    .score-display { font-size: 48px; font-weight: 800; color: var(--lime-2); margin: 20px 0 10px; }
+    .score-total { font-size: 16px; color: var(--muted); }
+    
+    .progress-bar { width: 100%; height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; overflow: hidden; }
+    .progress-fill { height: 100%; background: var(--lime-2); width: 0%; transition: width 1s ease-out; }
 
-    toggle.addEventListener('click', () => {
-      const open = toggle.getAttribute('aria-expanded') === 'true';
-      if (open) {
-        closeMenu();
-      } else {
-        toggle.setAttribute('aria-expanded', 'true');
-        menu.classList.add('open');
-        /* Lås bakgrunds-scroll på mobil när overlay-meny är öppen */
-        document.body.style.overflow = 'hidden';
-        setTimeout(() => {
-          document.addEventListener('click', outsideClick);
-          document.addEventListener('keydown', escClose);
-        }, 0);
-      }
-    });
+    .result-list { list-style: none; padding: 0; margin: 20px 0 0; font-size: 13px; line-height: 1.6; }
+    .result-list li { margin-bottom: 8px; color: var(--muted); position: relative; padding-left: 18px; }
+    .result-list li::before { content: "→"; position: absolute; left: 0; color: var(--lime-2); }
+    .result-text { font-size: 14px; color: var(--muted); margin-top: 20px; line-height: 1.5; }
+    
+    .keyword-cloud { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+    .kw-tag { font-size: 10px; background: rgba(255,255,255,0.05); padding: 4px 8px; border-radius: 4px; color: var(--muted); }
+    .warning-text { color: #ff4d4d; font-size: 12px; margin-top: 10px; }
 
-    /* Stäng menyn när man klickar en länk */
-    menu.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMenu));
-  </script>
+    .quick-wins { margin-top: 60px; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 40px; }
+    .quick-wins h3 { margin-bottom: 24px; font-size: 20px; }
+    .wins-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
+    .win-item { background: var(--card-bg); border: 1px solid var(--lime-2); border-radius: 16px; padding: 20px; font-size: 14px; color: var(--text); }
+
+    @media (max-width: 900px) {
+      .audit-form { flex-direction: column; }
+      .audit-input { width: 100%; }
+      #auditSubmit { width: 100%; }
+    }
+  </style>
+
+  <script src="audit.js"></script>
+  <script src="menu.js"></script>
 </body>
 </html>

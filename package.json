@@ -1,0 +1,26 @@
+{
+  "name": "leocastellucci.github.io",
+  "version": "1.0.0",
+  "description": "",
+  "main": "audit.js",
+  "directories": {
+    "example": "examples"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/leocastellucci/leocastellucci.github.io.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/leocastellucci/leocastellucci.github.io/issues"
+  },
+  "homepage": "https://github.com/leocastellucci/leocastellucci.github.io#readme",
+  "devDependencies": {
+    "wrangler": "^4.66.0"
+  }
+}
