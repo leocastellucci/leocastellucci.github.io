@@ -253,5 +253,266 @@
 
   <script src="audit.js"></script>
   <script src="menu.js"></script>
+  <script>
+(function () {
+  // Ensure dataLayer exists
+  window.dataLayer = window.dataLayer || [];
+
+  function getDeviceType() {
+    return window.innerWidth < 768 ? "mobile" : "desktop";
+  }
+
+  function getRefDomain(ref) {
+    try {
+      if (!ref) return "";
+      return new URL(ref).hostname || "";
+    } catch (e) {
+      return "";
+    }
+  }
+
+  function getTrafficSource() {
+    try {
+      var params = new URLSearchParams(window.location.search);
+      var utm_source = params.get("utm_source");
+      var utm_medium = params.get("utm_medium");
+      var utm_campaign = params.get("utm_campaign");
+
+      if (utm_source || utm_medium || utm_campaign) {
+        return [
+          utm_source ? ("utm_source=" + utm_source) : null,
+          utm_medium ? ("utm_medium=" + utm_medium) : null,
+          utm_campaign ? ("utm_campaign=" + utm_campaign) : null
+        ].filter(Boolean).join("&");
+      }
+
+      var refDomain = getRefDomain(document.referrer);
+      return refDomain ? ("referrer=" + refDomain) : "direct";
+    } catch (e) {
+      return "direct";
+    }
+  }
+
+  function clampText(s) {
+    if (!s) return null;
+    s = String(s).replace(/\s+/g, " ").trim();
+    if (!s) return null;
+    return s.length > 80 ? s.slice(0, 80) : s;
+  }
+
+  function getScrollPercent() {
+    var doc = document.documentElement;
+    var scrollTop = window.pageYOffset || doc.scrollTop || 0;
+    var scrollHeight = doc.scrollHeight || 0;
+    var clientHeight = doc.clientHeight || 0;
+    var denom = Math.max(1, scrollHeight - clientHeight);
+    return Math.max(0, Math.min(100, Math.round((scrollTop / denom) * 100)));
+  }
+
+  function getClosestSectionName(el) {
+    try {
+      if (!el) return "unknown";
+      var node = el.closest && el.closest("section,[id]");
+      if (node && node.id) return node.id;
+      var main = el.closest && el.closest("main");
+      if (main && main.id) return main.id;
+      return "unknown";
+    } catch (e) {
+      return "unknown";
+    }
+  }
+
+  // Global helper as requested
+  window.trackSiteEngagement = function (data) {
+    data = data || {};
+    window.dataLayer.push({
+      event: "site_engagement",
+      action_type: data.action_type || null,
+      element_name: data.element_name || null,
+      section_name: data.section_name || null,
+      engagement_time: data.engagement_time || null,
+      scroll_depth: data.scroll_depth || null,
+      outbound_url: data.outbound_url || null,
+      device_type: data.device_type || getDeviceType(),
+      traffic_source: data.traffic_source || getTrafficSource()
+    });
+  };
+
+  // A) Outbound click tracking
+  function isOutboundLink(a) {
+    try {
+      if (!a || !a.href) return false;
+      var href = a.getAttribute("href") || "";
+      if (!href) return false;
+      if (href.startsWith("#")) return false;
+
+      var url;
+      if (href.startsWith("mailto:") || href.startsWith("tel:")) return true;
+
+      url = new URL(a.href, window.location.href);
+      return url.hostname && url.hostname !== window.location.hostname;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function getLinkName(a) {
+    return clampText(a.getAttribute("aria-label") || a.textContent || a.title || a.href);
+  }
+
+  document.addEventListener("click", function (e) {
+    try {
+      var a = e.target && (e.target.closest ? e.target.closest("a") : null);
+      if (!a) return;
+      if (!isOutboundLink(a)) return;
+
+      var href = a.href || a.getAttribute("href");
+      window.trackSiteEngagement({
+        action_type: "outbound_click",
+        element_name: getLinkName(a),
+        section_name: getClosestSectionName(a),
+        outbound_url: href,
+        scroll_depth: getScrollPercent()
+      });
+    } catch (err) {
+      // swallow errors
+    }
+  }, true);
+
+  // B) Section views via IntersectionObserver (>= 50%)
+  var seenSections = new Set();
+
+  function collectSections() {
+    var sections = new Set();
+
+    document.querySelectorAll("section[id]").forEach(function (el) { sections.add(el); });
+    document.querySelectorAll("main [id]").forEach(function (el) { sections.add(el); });
+    document.querySelectorAll("[id]").forEach(function (el) {
+      // avoid tiny/utility ids
+      if (!el.id) return;
+      if (el === document.body || el === document.documentElement) return;
+      sections.add(el);
+    });
+
+    return Array.from(sections).filter(function (el) {
+      try {
+        // avoid tracking hidden or zero height
+        var r = el.getBoundingClientRect();
+        return r.height >= 80 && r.width >= 80;
+      } catch (e) {
+        return false;
+      }
+    });
+  }
+
+  function setupSectionObserver() {
+    if (!("IntersectionObserver" in window)) return;
+
+    var els = collectSections();
+    if (!els.length) return;
+
+    var obs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        if (entry.intersectionRatio < 0.5) return;
+        var id = entry.target && entry.target.id;
+        if (!id) return;
+        if (seenSections.has(id)) return;
+        seenSections.add(id);
+
+        window.trackSiteEngagement({
+          action_type: "section_view",
+          section_name: id,
+          scroll_depth: getScrollPercent()
+        });
+      });
+    }, { threshold: [0.5] });
+
+    els.forEach(function (el) {
+      try { obs.observe(el); } catch (e) {}
+    });
+  }
+
+  // C) Scroll depth milestones
+  var scrollMilestones = [25, 50, 75, 90];
+  var firedMilestones = new Set();
+
+  function onScroll() {
+    var p = getScrollPercent();
+    for (var i = 0; i < scrollMilestones.length; i++) {
+      var m = scrollMilestones[i];
+      if (p >= m && !firedMilestones.has(m)) {
+        firedMilestones.add(m);
+        window.trackSiteEngagement({
+          action_type: "scroll_depth",
+          scroll_depth: m
+        });
+      }
+    }
+  }
+
+  window.addEventListener("scroll", function () {
+    try { onScroll(); } catch (e) {}
+  }, { passive: true });
+
+  // D) 15s active engagement time
+  var activeMs = 0;
+  var lastTick = Date.now();
+  var hasFiredTime = false;
+  var isActive = true;
+
+  function markActive() {
+    isActive = true;
+  }
+
+  ["mousemove", "keydown", "scroll", "touchstart"].forEach(function (evt) {
+    window.addEventListener(evt, markActive, { passive: true });
+  });
+
+  document.addEventListener("visibilitychange", function () {
+    if (document.hidden) {
+      isActive = false;
+    } else {
+      isActive = true;
+      lastTick = Date.now();
+    }
+  });
+
+  setInterval(function () {
+    try {
+      var now = Date.now();
+      var delta = now - lastTick;
+      lastTick = now;
+
+      if (!document.hidden && isActive) {
+        activeMs += delta;
+      }
+
+      // decay activity so mousemove once doesn't count forever
+      isActive = false;
+
+      if (!hasFiredTime && activeMs >= 15000) {
+        hasFiredTime = true;
+        window.trackSiteEngagement({
+          action_type: "engagement_time",
+          engagement_time: activeMs,
+          scroll_depth: getScrollPercent()
+        });
+      }
+    } catch (e) {}
+  }, 1000);
+
+  // Init
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", function () {
+      setupSectionObserver();
+      onScroll(); // capture early scroll state
+    });
+  } else {
+    setupSectionObserver();
+    onScroll();
+  }
+})();
+</script>
 </body>
 </html>
