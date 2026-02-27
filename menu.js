@@ -33,7 +33,7 @@
       
       // Update toolbox buttons when opening
       updateToolboxMenu();
-      ensureToolboxButton();
+      ensureToolboxHeroButton();
 
       setTimeout(() => {
         document.addEventListener('click', outsideClick);
@@ -73,47 +73,51 @@
     } catch (err) { console.error("Menu update error:", err); }
   }
 
-  /* TOOLBOX hero button logic */
-  function ensureToolboxButton() {
+  /* TOOLBOX hero button logic - direct anchor-based insertion */
+  function ensureToolboxHeroButton() {
     try {
       const unlocked = localStorage.getItem("toolbox_access") === "1";
       
-      // Heuristic to find the right stack (cta-stack or container with SERVICES)
-      let stack = document.querySelector('.cta-stack');
-      if (!stack) {
-        // Fallback: Find container that has a link with text "SERVICES"
-        const allLinks = document.querySelectorAll('a');
-        const servicesLink = Array.from(allLinks).find(a => a.textContent.trim().toUpperCase() === "SERVICES");
-        if (servicesLink) stack = servicesLink.parentElement;
-      }
+      // Robust element search
+      const allEls = document.querySelectorAll("a,button");
+      const servicesEl = Array.from(allEls).find(el => /services/i.test(el.textContent.trim()));
+      const portfolioEl = Array.from(allEls).find(el => /portfolio/i.test(el.textContent.trim()));
+      const linkedInEl = Array.from(allEls).find(el => /connect on linkedin/i.test(el.textContent.trim()));
 
-      const linkedInBtn = stack ? stack.querySelector('.btn-linkedin') : null;
       let heroToolboxBtn = document.getElementById('heroToolboxBtn');
 
-      console.log("[toolbox]", { unlocked, hasBtn: !!heroToolboxBtn, stackFound: !!stack, linkedInFound: !!linkedInBtn });
+      console.log("[toolbox] ensure", { 
+        unlocked, 
+        servicesFound: !!servicesEl, 
+        portfolioFound: !!portfolioEl, 
+        linkedInFound: !!linkedInEl, 
+        hasBtn: !!heroToolboxBtn 
+      });
 
       if (unlocked) {
-        if (!heroToolboxBtn && stack) {
-          const servicesBtn = Array.from(stack.querySelectorAll('a')).find(
-            a => a.textContent.trim().toUpperCase() === "SERVICES"
-          );
-
+        if (!heroToolboxBtn) {
           heroToolboxBtn = document.createElement('a');
           heroToolboxBtn.id = 'heroToolboxBtn';
           heroToolboxBtn.href = 'toolbox.html';
           heroToolboxBtn.textContent = 'TOOLBOX';
           
-          // Copy className from LinkedIn button for perfect styling match
-          if (linkedInBtn) {
-            heroToolboxBtn.className = linkedInBtn.className;
+          // Copy className from linkedInEl (if found) or use fallback
+          if (linkedInEl) {
+            heroToolboxBtn.className = linkedInEl.className;
           } else {
             heroToolboxBtn.className = 'btn-pill btn-linkedin';
           }
 
-          if (servicesBtn) {
-            servicesBtn.parentNode.insertBefore(heroToolboxBtn, servicesBtn.nextSibling);
+          // Insert after first available anchor
+          if (servicesEl) {
+            servicesEl.insertAdjacentElement("afterend", heroToolboxBtn);
+          } else if (portfolioEl) {
+            portfolioEl.insertAdjacentElement("afterend", heroToolboxBtn);
+          } else if (linkedInEl) {
+            linkedInEl.insertAdjacentElement("afterend", heroToolboxBtn);
           } else {
-            stack.appendChild(heroToolboxBtn);
+            document.body.appendChild(heroToolboxBtn);
+            console.log("[toolbox] ensure: all anchors missing, appended to body");
           }
         }
       } else {
@@ -121,7 +125,7 @@
           heroToolboxBtn.remove();
         }
       }
-    } catch (err) { console.error("ensureToolboxButton error:", err); }
+    } catch (err) { console.error("ensureToolboxHeroButton error:", err); }
   }
 
   // MutationObserver to handle rerenders
@@ -129,7 +133,7 @@
   const observer = new MutationObserver(() => {
     if (debounceTimer) cancelAnimationFrame(debounceTimer);
     debounceTimer = requestAnimationFrame(() => {
-      ensureToolboxButton();
+      ensureToolboxHeroButton();
       updateToolboxMenu();
     });
   });
@@ -137,19 +141,19 @@
   // Start observer on body
   observer.observe(document.body, { childList: true, subtree: true });
 
-  // Handle storage changes (e.g. from another tab or late set)
+  // Handle storage changes
   window.addEventListener("storage", () => {
-    ensureToolboxButton();
+    ensureToolboxHeroButton();
     updateToolboxMenu();
   });
 
   // Initial calls
   document.addEventListener("DOMContentLoaded", () => {
-    ensureToolboxButton();
+    ensureToolboxHeroButton();
     updateToolboxMenu();
   });
 
-  // Run immediately in case DOM is already ready
-  ensureToolboxButton();
+  // Run immediately
+  ensureToolboxHeroButton();
   updateToolboxMenu();
 })();
