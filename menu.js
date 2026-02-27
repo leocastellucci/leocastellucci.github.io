@@ -30,6 +30,10 @@
       menu.classList.add('open');
       /* Lås bakgrunds-scroll på mobil när overlay-meny är öppen */
       document.body.style.overflow = 'hidden';
+      
+      // Update toolbox button when opening
+      updateToolboxMenu();
+
       setTimeout(() => {
         document.addEventListener('click', outsideClick);
         document.addEventListener('keydown', escClose);

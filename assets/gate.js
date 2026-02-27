@@ -1,10 +1,16 @@
+window.__GATE_LOADED = true;
+console.log("[GATE] loaded");
+
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwwV3M1hHwQSsuoKgPAM0WxRXyA7Qh0e7X5p2kD07pq7tV2fhRw5h-8JKJDrrb9q2vW4w/exec";
 
 document.addEventListener("DOMContentLoaded", () => {
+  console.log("[GATE] DOMContentLoaded");
   const root = document.getElementById("toolboxGateRoot");
+  console.log("[GATE] root:", !!root);
   if (!root) return;
 
   const isUnlocked = localStorage.getItem("toolbox_access") === "1";
+  console.log("[GATE] unlocked:", isUnlocked);
 
   if (isUnlocked) {
     // STATE A: Unlocked
@@ -53,14 +59,16 @@ document.addEventListener("DOMContentLoaded", () => {
     `;
 
     const gateForm = document.getElementById("gateForm");
+    const emailInput = document.getElementById("email");
+    const consentCheckbox = document.getElementById("consent");
+    const gateSubmit = document.getElementById("gateSubmit");
+    const gateStatus = document.getElementById("gateStatus");
+    
+    console.log("[GATE] gateForm:", !!gateForm);
+
     if (gateForm) {
       gateForm.addEventListener("submit", async (e) => {
         e.preventDefault();
-
-        const emailInput = document.getElementById("email");
-        const consentCheckbox = document.getElementById("consent");
-        const gateSubmit = document.getElementById("gateSubmit");
-        const gateStatus = document.getElementById("gateStatus");
 
         if (!emailInput || !consentCheckbox || !gateSubmit) return;
 
@@ -91,16 +99,18 @@ document.addEventListener("DOMContentLoaded", () => {
             }),
           });
 
+          const text = await response.text();
           let data;
           try {
-            data = await response.json();
+            data = JSON.parse(text);
           } catch (pErr) {
+            console.error("[GATE] failed to parse JSON:", text);
             throw new Error("Invalid response from server");
           }
 
           if (data && data.ok === true) {
             localStorage.setItem("toolbox_access", "1");
-            localStorage.setItem("toolbox_email", email);
+            localStorage.setItem("toolbox_email", email.trim().toLowerCase());
             
             const loader = document.getElementById("pageLoader");
             if (loader) {
@@ -110,6 +120,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
             window.location.href = "toolbox.html";
           } else {
+            console.error("[GATE] failed:", text);
             throw new Error((data && data.message) || "Submission failed");
           }
         } catch (error) {
