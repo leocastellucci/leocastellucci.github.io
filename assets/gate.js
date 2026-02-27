@@ -5,14 +5,14 @@ document.addEventListener("DOMContentLoaded", () => {
   const emailInput = document.getElementById("email");
   const consentCheckbox = document.getElementById("consent");
 
-  // Check Access Immediately
-  if (localStorage.getItem("toolbox_access") === "1") {
-    const unlocked = document.getElementById("gateUnlocked");
-    const locked = document.getElementById("gateLocked");
-    if (unlocked && locked) {
-      unlocked.classList.remove("hidden");
-      locked.classList.add("hidden");
-    }
+  // Step B - Toggle visibility
+  const locked = document.getElementById("gateLocked");
+  const unlocked = document.getElementById("gateUnlocked");
+  const isUnlocked = localStorage.getItem("toolbox_access") === "1";
+
+  if (locked && unlocked) {
+    locked.style.display = isUnlocked ? "none" : "block";
+    unlocked.style.display = isUnlocked ? "block" : "none";
   }
 
   if (!gateForm) {
