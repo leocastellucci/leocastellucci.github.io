@@ -174,6 +174,7 @@
       transition: border-color .2s ease;
     }
     .audit-input:focus { border-color: var(--lime-2); }
+    .hidden { display: none !important; }
     
     @media (max-width: 900px) {
       .audit-form { flex-direction: column; }
@@ -184,23 +185,12 @@
   <script src="menu.js"></script>
   <script src="assets/gate.js"></script>
   <script>
-    // Page Loader and Access Check
+    // Page Loader finish
     window.addEventListener("DOMContentLoaded", () => {
-      // 1. Loader finish
       const loader = document.getElementById("pageLoader");
       if (loader) {
         loader.classList.add("finishing");
         setTimeout(() => { loader.style.display = "none"; }, 300);
-      }
-
-      // 2. Access notice check
-      if (localStorage.getItem("toolbox_access") === "1") {
-        const unlocked = document.getElementById("gateUnlocked");
-        const locked = document.getElementById("gateLocked");
-        if (unlocked && locked) {
-          unlocked.classList.remove("hidden");
-          locked.classList.add("hidden");
-        }
       }
     });
 

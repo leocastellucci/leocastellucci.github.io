@@ -5,6 +5,16 @@ document.addEventListener("DOMContentLoaded", () => {
   const emailInput = document.getElementById("email");
   const consentCheckbox = document.getElementById("consent");
 
+  // Check Access Immediately
+  if (localStorage.getItem("toolbox_access") === "1") {
+    const unlocked = document.getElementById("gateUnlocked");
+    const locked = document.getElementById("gateLocked");
+    if (unlocked && locked) {
+      unlocked.classList.remove("hidden");
+      locked.classList.add("hidden");
+    }
+  }
+
   if (!gateForm) {
     console.error("gateForm not found");
     return;
