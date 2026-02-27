@@ -78,6 +78,7 @@
   </script>
 </head>
 <body>
+  <div id="pageLoader" class="active"></div>
   <header class="topbar" role="banner">
     <a href="index.html" class="home-btn" aria-label="Hem">
       <span class="diamond" aria-hidden="true"></span>
@@ -159,29 +160,37 @@
             </div>
           </div>
         </section>
-        
-        <div class="services-grid" style="margin-top: 40px;">
-          <article class="card">
-            <div class="tag">01</div>
-            <h3>Growth Frameworks</h3>
-            <p>Ready-to-use frameworks for scaling your campaigns.</p>
-          </article>
-          <article class="card">
-            <div class="tag">02</div>
-            <h3>Design Assets</h3>
-            <p>UI kits and graphic design templates for high conversion.</p>
-          </article>
-          <article class="card">
-            <div class="tag">03</div>
-            <h3>Analytics Dashboards</h3>
-            <p>Templates for Google Looker Studio and PostHog.</p>
-          </article>
-        </div>
       </section>
     </main>
   </div>
   
   <script src="audit.js"></script>
   <script src="menu.js"></script>
+  <script>
+    // Page Loader Logic
+    window.addEventListener("DOMContentLoaded", () => {
+      const loader = document.getElementById("pageLoader");
+      if (loader) {
+        loader.classList.add("finishing");
+        setTimeout(() => {
+          loader.style.display = "none";
+        }, 300);
+      }
+    });
+
+    // Handle internal link clicks for loader
+    document.querySelectorAll('a').forEach(link => {
+      if (link.hostname === window.location.hostname && !link.hash && !link.target) {
+        link.addEventListener('click', () => {
+          const loader = document.getElementById("pageLoader");
+          if (loader) {
+            loader.style.display = "block";
+            loader.classList.remove("finishing");
+            loader.classList.add("active");
+          }
+        });
+      }
+    });
+  </script>
 </body>
 </html>
