@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Toolbox - SETTEBELLO Marketing</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  
+  <script>
+    if (localStorage.getItem("toolbox_access") !== "1") {
+      window.location.href = "index.html";
+    }
+  </script>
+</head>
+<body>
+  <header class="topbar" role="banner">
+    <a href="index.html" class="home-btn" aria-label="Hem">
+      <span class="diamond" aria-hidden="true"></span>
+    </a>
+    <a href="index.html" class="center-logo" aria-label="SETTEBELLO">
+      <div class="brand">SETTEBELLO</div>
+      <div class="badge">MARKETING</div>
+    </a>
+  </header>
+
+  <div class="page">
+    <main style="padding-top: 120px;">
+      <section id="toolbox" aria-label="Toolbox Content">
+        <div class="chip"><span class="tiny-diamond"></span> Premium Content</div>
+        <h1 class="hero">Welcome to the Toolbox</h1>
+        <p class="lead">You have successfully unlocked the premium marketing resources.</p>
+        
+        <div class="services-grid" style="margin-top: 40px;">
+          <article class="card">
+            <div class="tag">01</div>
+            <h3>Growth Frameworks</h3>
+            <p>Ready-to-use frameworks for scaling your campaigns.</p>
+          </article>
+          <article class="card">
+            <div class="tag">02</div>
+            <h3>Design Assets</h3>
+            <p>UI kits and graphic design templates for high conversion.</p>
+          </article>
+          <article class="card">
+            <div class="tag">03</div>
+            <h3>Analytics Dashboards</h3>
+            <p>Templates for Google Looker Studio and PostHog.</p>
+          </article>
+        </div>
+      </section>
+    </main>
+  </div>
+  
+  <script src="menu.js"></script>
+</body>
+</html>

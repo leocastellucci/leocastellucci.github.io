@@ -185,6 +185,26 @@
           </div>
         </div>
       </section>
+
+      <!-- EMAIL GATE -->
+      <section id="toolbox-gate" aria-label="Toolbox Access">
+        <div class="section-title">ACCESS TOOLBOX</div>
+        <h2 class="hero">Unlock Our Exclusive Toolbox</h2>
+        <p class="lead">Submit your email below to unlock the SETTEBELLO Marketing Toolbox.</p>
+        
+        <div class="audit-container">
+          <form id="gateForm" class="audit-form" style="display: flex; flex-direction: column; align-items: flex-start;">
+            <div style="display: flex; gap: 16px; width: 100%; flex-wrap: wrap;">
+              <input type="email" id="email" placeholder="you@example.com" required class="audit-input" aria-label="Email Address">
+              <button type="submit" class="btn-pill btn-linkedin" id="gateSubmit">UNLOCK TOOLBOX</button>
+            </div>
+            <label style="display: flex; align-items: center; gap: 12px; margin-top: 20px; color: var(--muted); font-size: 14px; cursor: pointer;">
+              <input type="checkbox" id="consent" required style="width: 18px; height: 18px; cursor: pointer;">
+              I consent to receive marketing updates and agree to the terms.
+            </label>
+          </form>
+        </div>
+      </section>
     </main>
   </div>
 
@@ -253,6 +273,7 @@
 
   <script src="audit.js"></script>
   <script src="menu.js"></script>
+  <script src="assets/gate.js"></script>
   <script>
 (function () {
   // Ensure dataLayer exists
