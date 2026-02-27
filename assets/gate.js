@@ -16,17 +16,19 @@ document.addEventListener("DOMContentLoaded", () => {
       </div>
     `;
     
-    // Attach loader logic to the new button
+    // Attach loader logic safely
     const btn = document.getElementById("continueToToolbox");
     if (btn) {
       btn.addEventListener('click', (e) => {
-        if (e.metaKey || e.ctrlKey) return;
-        const loader = document.getElementById("pageLoader");
-        if (loader) {
-          loader.style.display = "block";
-          loader.classList.remove("finishing");
-          loader.classList.add("active");
-        }
+        try {
+          if (e.metaKey || e.ctrlKey) return;
+          const loader = document.getElementById("pageLoader");
+          if (loader) {
+            loader.style.display = "block";
+            loader.classList.remove("finishing");
+            loader.classList.add("active");
+          }
+        } catch (err) { console.error("Loader error:", err); }
       });
     }
   } else {
@@ -50,29 +52,30 @@ document.addEventListener("DOMContentLoaded", () => {
       </div>
     `;
 
-    // Attach Submission Logic
     const gateForm = document.getElementById("gateForm");
-    const emailInput = document.getElementById("email");
-    const consentCheckbox = document.getElementById("consent");
-
     if (gateForm) {
       gateForm.addEventListener("submit", async (e) => {
         e.preventDefault();
 
-        const email = emailInput.value;
-        const consent = consentCheckbox.checked;
+        const emailInput = document.getElementById("email");
+        const consentCheckbox = document.getElementById("consent");
         const gateSubmit = document.getElementById("gateSubmit");
         const gateStatus = document.getElementById("gateStatus");
 
+        if (!emailInput || !consentCheckbox || !gateSubmit) return;
+
+        const email = emailInput.value;
+        const consent = consentCheckbox.checked;
+
         // Start Loading UI
-        if (gateSubmit) {
-          gateSubmit.disabled = true;
-          gateSubmit.classList.add("is-loading");
-          gateSubmit.textContent = "UNLOCKING...";
-        }
+        gateSubmit.disabled = true;
+        gateSubmit.classList.add("is-loading");
+        gateSubmit.textContent = "UNLOCKING...";
+        
         if (gateStatus) {
           gateStatus.textContent = "Submitting...";
           gateStatus.classList.remove("hidden");
+          gateStatus.style.color = "";
         }
 
         try {
@@ -88,37 +91,36 @@ document.addEventListener("DOMContentLoaded", () => {
             }),
           });
 
-          const data = await response.json();
-
-          if (data.ok !== true) {
-            throw new Error(data.message || "Submission failed");
+          let data;
+          try {
+            data = await response.json();
+          } catch (pErr) {
+            throw new Error("Invalid response from server");
           }
 
-          // Forever Access Logic
-          localStorage.setItem("toolbox_access", "1");
-          localStorage.setItem("toolbox_email", email);
-          
-          // Page Loader UI before redirect
-          const loader = document.getElementById("pageLoader");
-          if (loader) {
-            loader.style.display = "block";
-            loader.classList.remove("finishing");
-            loader.classList.add("active");
+          if (data && data.ok === true) {
+            localStorage.setItem("toolbox_access", "1");
+            localStorage.setItem("toolbox_email", email);
+            
+            const loader = document.getElementById("pageLoader");
+            if (loader) {
+              loader.style.display = "block";
+              loader.classList.remove("finishing");
+              loader.classList.add("active");
+            }
+            window.location.href = "toolbox.html";
+          } else {
+            throw new Error((data && data.message) || "Submission failed");
           }
-          
-          window.location.href = "toolbox.html";
         } catch (error) {
           console.error("Submission error:", error);
           if (gateStatus) {
-            gateStatus.textContent = "Error: " + (error.message || "Failed to submit. Please try again.");
+            gateStatus.textContent = "Error: " + error.message;
             gateStatus.style.color = "#ff4d4d";
           }
-          // Restore Button State
-          if (gateSubmit) {
-            gateSubmit.disabled = false;
-            gateSubmit.classList.remove("is-loading");
-            gateSubmit.textContent = "UNLOCK TOOLBOX";
-          }
+          gateSubmit.disabled = false;
+          gateSubmit.classList.remove("is-loading");
+          gateSubmit.textContent = "UNLOCK TOOLBOX";
         }
       });
     }
