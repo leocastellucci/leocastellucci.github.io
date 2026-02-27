@@ -39,4 +39,32 @@
 
   /* Stäng menyn när man klickar en länk */
   menu.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMenu));
+
+  /* TOOLBOX menu item logic */
+  function updateToolboxMenu() {
+    const isUnlocked = localStorage.getItem("toolbox_access") === "1";
+    let toolboxBtn = document.getElementById('menuToolboxBtn');
+
+    if (isUnlocked) {
+      if (!toolboxBtn) {
+        toolboxBtn = document.createElement('a');
+        toolboxBtn.id = 'menuToolboxBtn';
+        toolboxBtn.href = 'toolbox.html';
+        toolboxBtn.textContent = 'Toolbox';
+        toolboxBtn.className = 'primary'; // Neon green style
+        toolboxBtn.style.marginTop = '10px';
+        menu.appendChild(toolboxBtn);
+        
+        // Ensure it also closes the menu when clicked
+        toolboxBtn.addEventListener('click', closeMenu);
+      }
+    } else {
+      if (toolboxBtn) {
+        toolboxBtn.remove();
+      }
+    }
+  }
+
+  // Run on load
+  updateToolboxMenu();
 })();

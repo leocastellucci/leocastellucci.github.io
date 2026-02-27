@@ -259,8 +259,26 @@ body { padding-top: var(--topbar-h); }
   to { transform: rotate(360deg); }
 }
 
-/* ===== Sektioner ===== */main { width: 100%; position: relative; padding-left: 80px; padding-right: 80px; }
-section { min-height: 100vh; padding-top: 220px; scroll-margin-top: calc(var(--topbar-h) + 16px); }
+/* ===== Sektioner ===== */
+main {
+  width: 100%;
+  position: relative;
+  padding-left: 80px;
+  padding-right: 80px;
+}
+
+section {
+  min-height: 100vh;
+  padding-top: 220px;
+  scroll-margin-top: calc(var(--topbar-h) + 16px);
+  /* Centering major sections */
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Exclude Hero from force-centering content if needed, 
+   but hero-header is already separate from 'main > section' 
+   in the existing structure. */
 
 .chip {
   display: inline-flex;
