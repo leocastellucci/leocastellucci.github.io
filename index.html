@@ -125,27 +125,32 @@
       <!-- EMAIL GATE -->
       <section id="toolbox-gate" aria-label="Toolbox Access">
         <div class="section-title">ACCESS TOOLBOX</div>
-        <h2 class="hero">Unlock Our Exclusive Toolbox</h2>
-        <p class="lead">Submit your email below to unlock the SETTEBELLO Marketing Toolbox.</p>
         
-        <div id="unlockedNotice" class="hidden" style="margin-top: 24px; padding: 32px; border: 1px solid var(--lime-2); border-radius: 22px; background: rgba(194, 255, 10, 0.05); text-align: left; max-width: 860px;">
-          <h3 style="margin: 0 0 16px 0; color: var(--lime-2); font-weight: 700;">Toolbox Already Unlocked!</h3>
-          <p style="margin: 0 0 24px 0; color: var(--muted); font-size: 14px;">Your access is active. Click below to enter the premium marketing resource center.</p>
-          <a href="toolbox.html" class="btn-pill btn-linkedin" id="continueToToolbox" style="min-width: auto; padding: 18px 36px; display: inline-block;">CONTINUE TO TOOLBOX</a>
+        <div id="gateUnlocked" class="hidden">
+          <h2 class="hero">Toolbox Already Unlocked!</h2>
+          <p class="lead">Your access is active. Click below to enter the premium marketing resource center.</p>
+          <div class="audit-container">
+            <a href="toolbox.html" class="btn-pill btn-linkedin" id="continueToToolbox" style="min-width: auto; padding: 26px 48px; display: inline-block;">CONTINUE TO TOOLBOX</a>
+          </div>
         </div>
 
-        <div class="audit-container" id="gateContainer">
-          <form id="gateForm" class="audit-form" style="display: flex; flex-direction: column; align-items: flex-start;">
-            <div style="display: flex; gap: 16px; width: 100%; flex-wrap: wrap;">
-              <input type="email" id="email" placeholder="you@example.com" required class="audit-input" aria-label="Email Address">
-              <button type="submit" class="btn-pill btn-linkedin" id="gateSubmit">UNLOCK TOOLBOX</button>
-            </div>
-            <label style="display: flex; align-items: center; gap: 12px; margin-top: 20px; color: var(--muted); font-size: 14px; cursor: pointer;">
-              <input type="checkbox" id="consent" required style="width: 18px; height: 18px; cursor: pointer;">
-              I consent to receive marketing updates and agree to the terms.
-            </label>
-            <div id="gateStatus" class="audit-status hidden" style="margin-top: 16px;"></div>
-          </form>
+        <div id="gateLocked">
+          <h2 class="hero">Unlock Our Exclusive Toolbox</h2>
+          <p class="lead">Submit your email below to unlock the SETTEBELLO Marketing Toolbox.</p>
+          
+          <div class="audit-container" id="gateContainer">
+            <form id="gateForm" class="audit-form" style="display: flex; flex-direction: column; align-items: flex-start;">
+              <div style="display: flex; gap: 16px; width: 100%; flex-wrap: wrap;">
+                <input type="email" id="email" placeholder="you@example.com" required class="audit-input" aria-label="Email Address">
+                <button type="submit" class="btn-pill btn-linkedin" id="gateSubmit">UNLOCK TOOLBOX</button>
+              </div>
+              <label style="display: flex; align-items: center; gap: 12px; margin-top: 20px; color: var(--muted); font-size: 14px; cursor: pointer;">
+                <input type="checkbox" id="consent" required style="width: 18px; height: 18px; cursor: pointer;">
+                I consent to receive marketing updates and agree to the terms.
+              </label>
+              <div id="gateStatus" class="audit-status hidden" style="margin-top: 16px;"></div>
+            </form>
+          </div>
         </div>
       </section>
     </main>
@@ -190,11 +195,11 @@
 
       // 2. Access notice check
       if (localStorage.getItem("toolbox_access") === "1") {
-        const notice = document.getElementById("unlockedNotice");
-        const container = document.getElementById("gateContainer");
-        if (notice && container) {
-          notice.classList.remove("hidden");
-          container.classList.add("hidden");
+        const unlocked = document.getElementById("gateUnlocked");
+        const locked = document.getElementById("gateLocked");
+        if (unlocked && locked) {
+          unlocked.classList.remove("hidden");
+          locked.classList.add("hidden");
         }
       }
     });

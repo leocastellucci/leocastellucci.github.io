@@ -50,7 +50,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Forever Access Logic
       localStorage.setItem("toolbox_access", "1");
-      localStorage.setItem("toolbox_access_set_at", new Date().toISOString());
       localStorage.setItem("toolbox_email", email);
       
       // Page Loader UI before redirect
