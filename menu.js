@@ -31,9 +31,9 @@
       /* Lås bakgrunds-scroll på mobil när overlay-meny är öppen */
       document.body.style.overflow = 'hidden';
       
-      // Update toolbox button when opening
+      // Update toolbox buttons when opening
       updateToolboxMenu();
-      syncToolboxHeroButton();
+      ensureToolboxButton();
 
       setTimeout(() => {
         document.addEventListener('click', outsideClick);
@@ -45,7 +45,7 @@
   /* Stäng menyn när man klickar en länk */
   menu.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMenu));
 
-  /* TOOLBOX menu item logic */
+  /* TOOLBOX menu item logic (hamburger) */
   function updateToolboxMenu() {
     try {
       const isUnlocked = localStorage.getItem("toolbox_access") === "1";
@@ -63,7 +63,6 @@
           
           toolboxBtn.addEventListener('click', (e) => {
             closeMenu();
-            // Optional: trigger page loader here if you want consistency
           });
         }
       } else {
@@ -74,42 +73,83 @@
     } catch (err) { console.error("Menu update error:", err); }
   }
 
-  function syncToolboxHeroButton() {
+  /* TOOLBOX hero button logic */
+  function ensureToolboxButton() {
     try {
       const unlocked = localStorage.getItem("toolbox_access") === "1";
-      const ctaStack = document.querySelector('.cta-stack');
-      if (!ctaStack) return;
-
-      const servicesBtn = Array.from(ctaStack.querySelectorAll('a')).find(
-        a => a.textContent.trim().toUpperCase() === "SERVICES"
-      );
       
+      // Heuristic to find the right stack (cta-stack or container with SERVICES)
+      let stack = document.querySelector('.cta-stack');
+      if (!stack) {
+        // Fallback: Find container that has a link with text "SERVICES"
+        const allLinks = document.querySelectorAll('a');
+        const servicesLink = Array.from(allLinks).find(a => a.textContent.trim().toUpperCase() === "SERVICES");
+        if (servicesLink) stack = servicesLink.parentElement;
+      }
+
+      const linkedInBtn = stack ? stack.querySelector('.btn-linkedin') : null;
       let heroToolboxBtn = document.getElementById('heroToolboxBtn');
 
+      console.log("[toolbox]", { unlocked, hasBtn: !!heroToolboxBtn, stackFound: !!stack, linkedInFound: !!linkedInBtn });
+
       if (unlocked) {
-        if (!heroToolboxBtn && servicesBtn) {
-          const linkedinBtn = ctaStack.querySelector('.btn-linkedin');
+        if (!heroToolboxBtn && stack) {
+          const servicesBtn = Array.from(stack.querySelectorAll('a')).find(
+            a => a.textContent.trim().toUpperCase() === "SERVICES"
+          );
+
           heroToolboxBtn = document.createElement('a');
           heroToolboxBtn.id = 'heroToolboxBtn';
           heroToolboxBtn.href = 'toolbox.html';
           heroToolboxBtn.textContent = 'TOOLBOX';
-          // Match LinkedIn green style
-          if (linkedinBtn) {
-            heroToolboxBtn.className = linkedinBtn.className;
+          
+          // Copy className from LinkedIn button for perfect styling match
+          if (linkedInBtn) {
+            heroToolboxBtn.className = linkedInBtn.className;
           } else {
             heroToolboxBtn.className = 'btn-pill btn-linkedin';
           }
-          servicesBtn.parentNode.insertBefore(heroToolboxBtn, servicesBtn.nextSibling);
+
+          if (servicesBtn) {
+            servicesBtn.parentNode.insertBefore(heroToolboxBtn, servicesBtn.nextSibling);
+          } else {
+            stack.appendChild(heroToolboxBtn);
+          }
         }
       } else {
         if (heroToolboxBtn) {
           heroToolboxBtn.remove();
         }
       }
-    } catch (err) { console.error("Hero button sync error:", err); }
+    } catch (err) { console.error("ensureToolboxButton error:", err); }
   }
 
-  // Run on load
+  // MutationObserver to handle rerenders
+  let debounceTimer;
+  const observer = new MutationObserver(() => {
+    if (debounceTimer) cancelAnimationFrame(debounceTimer);
+    debounceTimer = requestAnimationFrame(() => {
+      ensureToolboxButton();
+      updateToolboxMenu();
+    });
+  });
+
+  // Start observer on body
+  observer.observe(document.body, { childList: true, subtree: true });
+
+  // Handle storage changes (e.g. from another tab or late set)
+  window.addEventListener("storage", () => {
+    ensureToolboxButton();
+    updateToolboxMenu();
+  });
+
+  // Initial calls
+  document.addEventListener("DOMContentLoaded", () => {
+    ensureToolboxButton();
+    updateToolboxMenu();
+  });
+
+  // Run immediately in case DOM is already ready
+  ensureToolboxButton();
   updateToolboxMenu();
-  syncToolboxHeroButton();
 })();
