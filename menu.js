@@ -33,6 +33,7 @@
       
       // Update toolbox button when opening
       updateToolboxMenu();
+      syncToolboxHeroButton();
 
       setTimeout(() => {
         document.addEventListener('click', outsideClick);
@@ -73,6 +74,42 @@
     } catch (err) { console.error("Menu update error:", err); }
   }
 
+  function syncToolboxHeroButton() {
+    try {
+      const unlocked = localStorage.getItem("toolbox_access") === "1";
+      const ctaStack = document.querySelector('.cta-stack');
+      if (!ctaStack) return;
+
+      const servicesBtn = Array.from(ctaStack.querySelectorAll('a')).find(
+        a => a.textContent.trim().toUpperCase() === "SERVICES"
+      );
+      
+      let heroToolboxBtn = document.getElementById('heroToolboxBtn');
+
+      if (unlocked) {
+        if (!heroToolboxBtn && servicesBtn) {
+          const linkedinBtn = ctaStack.querySelector('.btn-linkedin');
+          heroToolboxBtn = document.createElement('a');
+          heroToolboxBtn.id = 'heroToolboxBtn';
+          heroToolboxBtn.href = 'toolbox.html';
+          heroToolboxBtn.textContent = 'TOOLBOX';
+          // Match LinkedIn green style
+          if (linkedinBtn) {
+            heroToolboxBtn.className = linkedinBtn.className;
+          } else {
+            heroToolboxBtn.className = 'btn-pill btn-linkedin';
+          }
+          servicesBtn.parentNode.insertBefore(heroToolboxBtn, servicesBtn.nextSibling);
+        }
+      } else {
+        if (heroToolboxBtn) {
+          heroToolboxBtn.remove();
+        }
+      }
+    } catch (err) { console.error("Hero button sync error:", err); }
+  }
+
   // Run on load
   updateToolboxMenu();
+  syncToolboxHeroButton();
 })();
